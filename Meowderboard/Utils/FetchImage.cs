@@ -51,24 +51,19 @@ namespace Meowderboard.Utils
             ASCIIEncoding ascii = new ASCIIEncoding();
             
             start:
-                Plugin.Log.Info("got here 1");
                 Plugin.Log.Info("Getting a cat...");
                 IsFetching = true;
                 
                 string wantedHandle = Handles[new Random().Next(0, Handles.Length)];
-                Plugin.Log.Info("got here 2");
                 
                 CachedResponse.TryGetValue(wantedHandle, out JObject cachedResponse);
                 CachedResponseTime.TryGetValue(wantedHandle, out float cachedResponseTime);
-                Plugin.Log.Info("got here 3");
 
                 if (Time.time - cachedResponseTime > 7200f || cachedResponse == null)
                 {
-                    Plugin.Log.Info("got here 4");
                     HttpResponseMessage response = await HttpClient.GetAsync($"xrpc/app.bsky.feed.getAuthorFeed?actor={wantedHandle}&filter=posts_with_media&limit=100");
                     if (!response.IsSuccessStatusCode)
                     {
-                        Plugin.Log.Info("got here 5");
                         Plugin.Log.Warn("Failed to get a cat, Bluesky JSON response was bad :(");
                         IsFetching = false;
                         return null;
@@ -76,7 +71,6 @@ namespace Meowderboard.Utils
                     
                     CachedResponse[wantedHandle] = JObject.Parse(await response.Content.ReadAsStringAsync());
                     CachedResponseTime[wantedHandle] = Time.time;
-                    Plugin.Log.Info("got here 6");
                 }
 
                 JToken post;
@@ -90,32 +84,25 @@ namespace Meowderboard.Utils
                     Plugin.Log.Error(e);
                     goto start;
                 }
-
-                Plugin.Log.Info("got here 7");
+                
             if (post?["record"]?["embed"]?["$type"]?.ToString() != "app.bsky.embed.images")
             {
-                Plugin.Log.Info("got here 7.1");
                 Plugin.Log.Info("(post doesn't have an embedded image)");
                 goto start;
             }
             
             string imageURL = post["embed"]?["images"]?[0]?["thumb"]?.ToString();
-            Plugin.Log.Info("got here 8");
 
             if (imageURL == null)
             {
-                Plugin.Log.Info("got here 8.1");
                 Plugin.Log.Info("(post doesn't have an embedded thumbnail (wtf))");
                 goto start;
             }
 
             Uri uri = new Uri(imageURL);
-            Plugin.Log.Info("got here 9");
             HttpResponseMessage imageResponse = await ImageHttpClient.GetAsync(uri.PathAndQuery.Substring(1));
-            Plugin.Log.Info("got here 10");
             if (!imageResponse.IsSuccessStatusCode)
             {
-                Plugin.Log.Info("got here 10.1");
                 Plugin.Log.Warn("Failed to get a cat, image response was bad :(");
                 IsFetching = false;
                 return null;
@@ -123,7 +110,6 @@ namespace Meowderboard.Utils
 
             SourceAccount = wantedHandle;
             SourceLink = $"https://bsky.app/profile/{wantedHandle}/post/{post["uri"]?.ToString().Split('/').Last()}";
-            Plugin.Log.Info("got here 11");
 
             string rawText = post["record"]?["text"]?.ToString();
             if (rawText != null)
@@ -135,12 +121,11 @@ namespace Meowderboard.Utils
             {
                 SourceText = null;
             }
-
-            Plugin.Log.Info("got here 12");
+            
             SourceTime = DateTime.Parse(post["record"]?["createdAt"]?.ToString());
             
 
-            Plugin.Log.Info($"Got a cat. :D");
+            Plugin.Log.Info("Got a cat. :D");
             return await imageResponse.Content.ReadAsByteArrayAsync();
         }
 

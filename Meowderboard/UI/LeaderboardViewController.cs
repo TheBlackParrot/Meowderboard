@@ -166,7 +166,7 @@ namespace Meowderboard.UI
 
         public void OnLeaderboardSet(BeatmapKey beatmapKey)
         {
-            Plugin.Log.Info("LeaderboardViewController.OnLeaderboardSet called");
+            //Plugin.Log.Info("LeaderboardViewController.OnLeaderboardSet called");
         }
     }
 }
