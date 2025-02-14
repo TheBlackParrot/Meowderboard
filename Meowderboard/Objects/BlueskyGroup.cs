@@ -28,7 +28,12 @@ namespace Meowderboard.Objects
             "billythecat.bsky.social",
             "harveyandpetey.bsky.social",
             "baxtercat.bsky.social",
-            "cheesecakethecat.bsky.social"
+            "cheesecakethecat.bsky.social",
+            "cats.blue",
+            "jumpingcat.org",
+            "weirdlilguys.bsky.social",
+            "catbraincell.bsky.social",
+            "shouldhavecat.bsky.social"
         };
 
         [UIAction("fetchImage")]
