@@ -3,7 +3,7 @@
   "id": "Meowderboard",
   "name": "Meowderboard",
   "author": "TheBlackParrot",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Shows latest images from a few cat-oriented accounts on Bluesky in place of a leaderboard",
   "gameVersion": "1.39.1",
   "dependsOn": {

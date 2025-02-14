@@ -37,7 +37,7 @@ namespace Meowderboard.UI
         private static float _lastFetch;
         
         // something ridiculous to signal it hasn't been set
-        private static Color _originalHeaderColor = new Color(123f, 456f, 789f, 123f);
+        private static Color _originalHeaderColor;
         
         private static CancellationTokenSource _currentTokenSource;
 
@@ -103,20 +103,21 @@ namespace Meowderboard.UI
             
             if (GameObject.Find("HeaderPanel").transform.Find("BG").TryGetComponent(out ImageView imageView))
             {
-                if (Mathf.Approximately(_originalHeaderColor.a, 123f))
-                {
-                    _originalHeaderColor = imageView.color;
-                }
-
+                _originalHeaderColor = imageView.color;
+                
                 imageView.color0 = Color.clear;
                 imageView.color1 = Color.clear;
                 imageView.color = Color.clear;
             }
             _platformLeaderboardViewController.GetComponentInChildren<TextMeshProUGUI>().color = Color.clear;
 
-            if ((Time.time - _lastFetch > 20f && !Utils.Cats.IsFetching) || firstActivation)
+            if (firstActivation)
             {
+                _postText.maxVisibleLines = 2;
+                _postText.lineSpacing = -45;
+                
                 _catImage.color = Color.clear;
+                
                 _ = TopPanelViewController.Instance.CatNeedsToSleep();
                 GetCat();
             }
@@ -139,8 +140,8 @@ namespace Meowderboard.UI
                 }
                 
                 await Utils.Cats.Fetch(_catImage);
-                _sourceAccount.text = $"<b>@{Utils.Cats.SourceAccount}</b>  <alpha=#44>—  <alpha=#88>{Utils.Cats.SourceTime}";
-                _postText.text = string.IsNullOrEmpty(Utils.Cats.SourceText) ? "<alpha=#88><i>(no caption provided)</i>" : $"<alpha=#CC>{Utils.Cats.SourceText}";
+                _sourceAccount.text = $"<b>@{Utils.Cats.SourceAccount}</b>  <alpha=#44>—  <size=85%><alpha=#88>{Utils.Cats.SourceTime:g}";
+                _postText.text = "<size=95%>" + (string.IsNullOrEmpty(Utils.Cats.SourceText) ? "<alpha=#88><i>(no caption provided)</i>" : $"<alpha=#CC>{Utils.Cats.SourceText}");
                 _sourceAccount.SetAllDirty();
                 _postText.SetAllDirty();
                 
@@ -166,7 +167,6 @@ namespace Meowderboard.UI
 
         public void OnLeaderboardSet(BeatmapKey beatmapKey)
         {
-            //Plugin.Log.Info("LeaderboardViewController.OnLeaderboardSet called");
         }
     }
 }

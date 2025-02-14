@@ -28,7 +28,7 @@ namespace Meowderboard.UI {
         internal async Task CatNeedsToSleep()
         {
             _refreshButton.interactable = false;
-            await Task.Delay(20000);
+            await Task.Delay(3000);
             _refreshButton.interactable = true;
         }
     }

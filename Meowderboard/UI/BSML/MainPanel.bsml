@@ -1,5 +1,5 @@
 <bg xsi:noNamespaceSchemaLocation="https://monkeymanboy.github.io/BSML-Docs/BSMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <vertical preferred-height="60" preferred-width="80"
+    <vertical preferred-height="50" preferred-width="80"
               child-align="UpperCenter" anchor-pos-x="6" anchor-pos-y="15"
               vertical-fit="PreferredSize" horizontal-fit="PreferredSize"
               child-expand-width="true" child-expand-height="true"
@@ -7,16 +7,21 @@
               padding="4">
         <image id="catImage" preserve-aspect="true"/>
     </vertical>
-    <vertical preferred-height="7" preferred-width="80"
-                child-align="MiddleLeft" anchor-pos-x="6" anchor-pos-y="-20"
+    <vertical preferred-height="13" preferred-width="80"
+                child-align="MiddleLeft" anchor-pos-x="6" anchor-pos-y="-18"
                 vertical-fit="PreferredSize" horizontal-fit="PreferredSize"
                 background="round-rect-panel" background-color="#FFFFFF"
                 pad-top="1" pad-bottom="1" pad-left="2" pad-right="2" child-expand-width="false">
-        <horizontal horizontal-fit="PreferredSize" preferred-width="80" pad-left="2" pad-right="2" child-align="MiddleLeft">
-            <clickable-text text="" id="sourceAccount" font-size="2" on-click="openPostSource"/>
+        <horizontal vertical-fit="PreferredSize" preferred-height="6"
+                    horizontal-fit="PreferredSize" preferred-width="80"
+                    pad-top="1" pad-bottom="1" pad-left="2" pad-right="2" child-align="MiddleLeft">
+            <clickable-text text="" id="sourceAccount" font-size="3" on-click="openPostSource"/>
         </horizontal>
-        <horizontal horizontal-fit="PreferredSize" preferred-width="80" pad-left="2" pad-right="2" child-align="MiddleLeft">
-            <text text="" font-size="2" rich-text="true" font-color="#FFFFFF" id="postText" overflow-mode="Ellipsis"/>
+        
+        <horizontal vertical-fit="PreferredSize" preferred-height="10"
+                    horizontal-fit="PreferredSize" preferred-width="80"
+                    pad-top="1" pad-left="2" pad-right="2" child-align="MiddleLeft">
+            <text text="" font-size="3" rich-text="true" font-color="#FFFFFF" id="postText" overflow-mode="Ellipsis" word-wrapping="true"/>
         </horizontal>
     </vertical>
 </bg>
