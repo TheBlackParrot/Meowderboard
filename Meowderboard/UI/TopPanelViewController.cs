@@ -1,6 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.ViewControllers;
+using HarmonyLib;
+using Meowderboard.Configuration;
+using Meowderboard.Objects;
 using UnityEngine.UI;
 
 namespace Meowderboard.UI {
@@ -10,26 +15,33 @@ namespace Meowderboard.UI {
     {
         internal static TopPanelViewController Instance;
 
+        [UIComponent("refreshButtonContainer")]
+        internal static readonly LayoutGroup RefreshButtonContainer;
+        
+        [UIValue("groups")]
+        internal static List<BlueskyGroup> BlueskyGroups => PluginConfig.Instance.Groups;
+        
         public TopPanelViewController()
         {
             Instance = this;
         }
-        
-        [UIComponent("refreshButton")]
-        private readonly Button _refreshButton = null!;
 
-        [UIAction("getCat")]
-        internal void GetCat()
+        internal static async Task CooldownButtons()
         {
-            _ = CatNeedsToSleep();
-            MeowderboardViewController.Instance.GetCat();
-        }
-
-        internal async Task CatNeedsToSleep()
-        {
-            _refreshButton.interactable = false;
-            await Task.Delay(3000);
-            _refreshButton.interactable = true;
+            Plugin.Log.Info("Triggering button cooldown");
+            try
+            {
+                Button[] buttons = RefreshButtonContainer.gameObject.GetComponentsInChildren<Button>();
+                Plugin.Log.Info($"Found {buttons.Length} buttons");
+            
+                buttons.Do(button => button.interactable = false);
+                await Task.Delay(3000);
+                buttons.Do(button => button.interactable = true);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.Error(e);
+            }
         }
     }
 }

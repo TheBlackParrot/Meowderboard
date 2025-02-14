@@ -20,7 +20,7 @@
         
         <horizontal vertical-fit="PreferredSize" preferred-height="10"
                     horizontal-fit="PreferredSize" preferred-width="80"
-                    pad-top="1" pad-left="2" pad-right="2" child-align="MiddleLeft">
+                    pad-top="2" pad-left="2" pad-right="2" child-align="MiddleLeft">
             <text text="" font-size="3" rich-text="true" font-color="#FFFFFF" id="postText" overflow-mode="Ellipsis" word-wrapping="true"/>
         </horizontal>
     </vertical>

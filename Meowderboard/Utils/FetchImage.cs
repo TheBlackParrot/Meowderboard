@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using BeatSaberMarkupLanguage;
 using HMUI;
+using Meowderboard.Objects;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using Random = System.Random;
 
 namespace Meowderboard.Utils
 {
-    internal static class Cats
+    internal static class FetchImage
     {
         private static readonly HttpClient HttpClient = new HttpClient
         {
@@ -21,21 +22,6 @@ namespace Meowderboard.Utils
         private static readonly HttpClient ImageHttpClient = new HttpClient
         {
             BaseAddress = new Uri("https://cdn.bsky.app")
-        };
-
-        private static readonly string[] Handles =
-        {
-            "bodegacats.bsky.social",
-            "catworkers.bsky.social",
-            "fartycheddarcat.bsky.social",
-            "gonzo.bsky.social",
-            "ricky.baby",
-            "parkinkatt.bsky.social",
-            "karaisntactive.bsky.social",
-            "billythecat.bsky.social",
-            "harveyandpetey.bsky.social",
-            "baxtercat.bsky.social",
-            "cheesecakethecat.bsky.social"
         };
         
         internal static bool IsFetching;
@@ -46,15 +32,16 @@ namespace Meowderboard.Utils
         internal static string SourceText;
         internal static DateTime SourceTime;
 
-        private static async Task<byte[]> GetCat()
+        private static async Task<byte[]> Fetch(BlueskyGroup blueskyGroup)
         {
             ASCIIEncoding ascii = new ASCIIEncoding();
+            List<string> blueskyHandles = blueskyGroup.BlueskyHandles;
             
             start:
-                Plugin.Log.Info("Getting a cat...");
+                Plugin.Log.Info("Getting an image...");
                 IsFetching = true;
                 
-                string wantedHandle = Handles[new Random().Next(0, Handles.Length)];
+                string wantedHandle = blueskyHandles[new Random().Next(0, blueskyHandles.Count)];
                 
                 CachedResponse.TryGetValue(wantedHandle, out JObject cachedResponse);
                 CachedResponseTime.TryGetValue(wantedHandle, out float cachedResponseTime);
@@ -64,7 +51,7 @@ namespace Meowderboard.Utils
                     HttpResponseMessage response = await HttpClient.GetAsync($"xrpc/app.bsky.feed.getAuthorFeed?actor={wantedHandle}&filter=posts_with_media&limit=100");
                     if (!response.IsSuccessStatusCode)
                     {
-                        Plugin.Log.Warn("Failed to get a cat, Bluesky JSON response was bad :(");
+                        Plugin.Log.Warn($"Failed to fetch image from {wantedHandle}, Bluesky JSON response was bad :(");
                         IsFetching = false;
                         return null;
                     }
@@ -85,9 +72,12 @@ namespace Meowderboard.Utils
                     goto start;
                 }
                 
+            SourceAccount = wantedHandle;
+            SourceLink = $"https://bsky.app/profile/{wantedHandle}/post/{post["uri"]?.ToString().Split('/').Last()}";
+            
             if (post?["record"]?["embed"]?["$type"]?.ToString() != "app.bsky.embed.images")
             {
-                Plugin.Log.Info("(post doesn't have an embedded image)");
+                Plugin.Log.Info($"(post {SourceLink} doesn't have an embedded image)");
                 goto start;
             }
             
@@ -95,7 +85,7 @@ namespace Meowderboard.Utils
 
             if (imageURL == null)
             {
-                Plugin.Log.Info("(post doesn't have an embedded thumbnail (wtf))");
+                Plugin.Log.Info($"(post {SourceLink} doesn't have an embedded thumbnail (????))");
                 goto start;
             }
 
@@ -103,13 +93,10 @@ namespace Meowderboard.Utils
             HttpResponseMessage imageResponse = await ImageHttpClient.GetAsync(uri.PathAndQuery.Substring(1));
             if (!imageResponse.IsSuccessStatusCode)
             {
-                Plugin.Log.Warn("Failed to get a cat, image response was bad :(");
+                Plugin.Log.Warn($"Failed to fetch image from {SourceLink}, image response was bad :(");
                 IsFetching = false;
                 return null;
             }
-
-            SourceAccount = wantedHandle;
-            SourceLink = $"https://bsky.app/profile/{wantedHandle}/post/{post["uri"]?.ToString().Split('/').Last()}";
 
             string rawText = post["record"]?["text"]?.ToString();
             if (rawText != null)
@@ -125,13 +112,13 @@ namespace Meowderboard.Utils
             SourceTime = DateTime.Parse(post["record"]?["createdAt"]?.ToString());
             
 
-            Plugin.Log.Info("Got a cat. :D");
+            Plugin.Log.Info("Fetched image. :D");
             return await imageResponse.Content.ReadAsByteArrayAsync();
         }
 
-        internal static async Task Fetch(ImageView imageView)
+        internal static async Task Fetch(ImageView imageView, BlueskyGroup blueskyGroup)
         {
-            byte[] catBytes = await GetCat();
+            byte[] catBytes = await Fetch(blueskyGroup);
             if (catBytes != null)
             {
                 imageView.sprite = await Utilities.LoadSpriteAsync(catBytes);

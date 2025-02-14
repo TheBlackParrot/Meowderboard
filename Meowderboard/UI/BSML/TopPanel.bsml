@@ -1,5 +1,7 @@
 ﻿<bg xsi:noNamespaceSchemaLocation="https://monkeymanboy.github.io/BSML-Docs/BSMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <horizontal child-align="MiddleCenter" anchor-pos-x="3">
-        <primary-button text="Meow" on-click="getCat" id="refreshButton"/>
+    <horizontal child-align="MiddleCenter" anchor-pos-x="3" id="refreshButtonContainer">
+        <macro.for-each hosts="groups">
+            <primary-button text="~buttonText" on-click="fetchImage" hover-hint="~groupName"/>
+        </macro.for-each>
     </horizontal>
 </bg>

@@ -7,6 +7,8 @@ using HMUI;
 using IPA.Utilities.Async;
 using JetBrains.Annotations;
 using LeaderboardCore.Interfaces;
+using Meowderboard.Configuration;
+using Meowderboard.Objects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
@@ -50,7 +52,7 @@ namespace Meowderboard.UI
         [UsedImplicitly]
         private void OpenPostSource()
         {
-            Application.OpenURL(Utils.Cats.SourceLink);
+            Application.OpenURL(Utils.FetchImage.SourceLink);
         }
 
         private async Task FadeIn()
@@ -114,16 +116,16 @@ namespace Meowderboard.UI
             if (firstActivation)
             {
                 _postText.maxVisibleLines = 2;
-                _postText.lineSpacing = -45;
+                _postText.lineSpacing = -42;
                 
                 _catImage.color = Color.clear;
-                
-                _ = TopPanelViewController.Instance.CatNeedsToSleep();
-                GetCat();
+
+                _ = TopPanelViewController.CooldownButtons();
+                GetCat(PluginConfig.Instance.Groups[0]);
             }
         }
 
-        internal void GetCat()
+        internal void GetCat(BlueskyGroup blueskyGroup)
         {
             _sourceAccount.text = "";
             _postText.text = "";
@@ -139,9 +141,9 @@ namespace Meowderboard.UI
                     await FadeOut();
                 }
                 
-                await Utils.Cats.Fetch(_catImage);
-                _sourceAccount.text = $"<b>@{Utils.Cats.SourceAccount}</b>  <alpha=#44>—  <size=85%><alpha=#88>{Utils.Cats.SourceTime:g}";
-                _postText.text = "<size=95%>" + (string.IsNullOrEmpty(Utils.Cats.SourceText) ? "<alpha=#88><i>(no caption provided)</i>" : $"<alpha=#CC>{Utils.Cats.SourceText}");
+                await Utils.FetchImage.Fetch(_catImage, blueskyGroup);
+                _sourceAccount.text = $"<b>@{Utils.FetchImage.SourceAccount}</b>  <alpha=#44>—  <size=85%><alpha=#88>{Utils.FetchImage.SourceTime:g}";
+                _postText.text = "<size=95%>" + (string.IsNullOrEmpty(Utils.FetchImage.SourceText) ? "<alpha=#88><i>(no caption provided)</i>" : $"<alpha=#CC>{Utils.FetchImage.SourceText}");
                 _sourceAccount.SetAllDirty();
                 _postText.SetAllDirty();
                 
